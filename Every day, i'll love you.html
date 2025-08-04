@@ -1,0 +1,1217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ninhinane</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #ffe6f0, #fff5f9);
+      color: #2c3e50;
+      margin: 0;
+      padding: 0 1em 60px;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      font-size: 18px;
+    }
+
+    header {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5em;
+      margin: 0.5em auto 0.3em auto;
+      color: #d36c9d;
+      text-shadow: 1px 1px 2px #f9d8e8;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 700px;
+      margin: 1em auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75em;
+      flex-grow: 1;
+    }
+
+    .bubble-box {
+      background-color: #fff0f5;
+      border-radius: 20px;
+      padding: 1.25em 1.75em;
+      box-shadow: 0 6px 18px rgba(211, 108, 157, 0.15);
+      border: 2px solid #f8d2e3;
+    }
+
+    .bubble-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6em;
+      color: #c94f93;
+      margin-bottom: 0.5em;
+      cursor: pointer;
+    }
+
+    .bubble-content {
+      color: #5c6b77;
+      white-space: pre-wrap;
+      margin-top: 0.5em;
+      display: none;
+      line-height: 1.6;
+    }
+
+    .bubble-content.expanded {
+      display: block;
+    }
+
+    .button-row {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3em 1em;
+      background: #d36c9d;
+      box-shadow: 0 -3px 10px rgba(211, 108, 157, 0.4);
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .nav-button {
+      background-color: white;
+      color: #d36c9d;
+      border: 2px solid #c94f93;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      user-select: none;
+      font-size: 1em;
+      padding: 0.6em 0;
+      width: 100%;
+      max-width: 200px;
+      transition: background 0.2s ease, transform 0.15s ease;
+      position: relative;
+    }
+
+    .nav-button:hover:not(:disabled) {
+      background-color: #fbe9f2;
+      transform: translateY(-2px);
+    }
+
+    .nav-button:disabled {
+      opacity: 0.5;
+      cursor: default;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <header>every day, i'll love you</header>
+
+  <div class="content" id="content"></div>
+
+  <div class="button-row">
+    <button id="prevBtn" class="nav-button">Previous</button>
+    <button id="randomBtn" class="nav-button">SurCrise Me</button>
+    <button id="nextBtn" class="nav-button">Next</button>
+  </div>
+
+  <script>
+    const phrases = [
+      {
+ 
+day: 1,
+english: `I hope you know just how important you are to me. I hope you know that there is no-one i would rather spend my life with. I hope you know how much happiness you bring me. I hope you know what a beautiful soul you truly are. `,
+french: `J'espère juste que tu sais à quel point tu es importante pour moi. J’espère que tu sais qu’il n’y a personne d'autre avec qui je préfère passer ma vie. J’espère que tu sais combien de bonheur tu m'apportes. J’espère que tu sais combien ton âme est belle et précieuse.`
+},
+      {
+day: 2,
+english: `I'm proud of you for fighting the battles no-one knows about. For staying strong when you just wanted to give up. For remaining your true, authentic self when everything came crumbling down around you. I'm proud of you, in more ways than you'll ever know. You're my inspiration, and I mean that from the bottom of my heart. `,
+french: `Je suis fier de toi pour avoir mené ces combats dont personne ne connaît l'existence. Pour être restée forte alors que tu voulais tout abandonner. Pour avoir gardé ton authenticité quand tout s'effondrait autour de toi. Je suis fier de toi, bien plus que tu ne pourras jamais l'imaginer. Tu es mon inspiration, et je te le dis du fond de mon cœur. `
+}, 
+      {
+day: 3,
+english: `Every day I thank Allah for blessing me with you. I am so lucky. Alhamdulillah `,
+french: `Chaque jour, je remercie Allah de m'avoir béni en te mettant sur mon chemin. Je suis tellement chanceux. Alhamdulillah`
+},
+      {
+day: 4,
+english: `My heaven is lying on the couch, in your arms, dreaming about our future house, and all the little specific details. I never knew I would ever be with someone I could picture having a dream life with. \n[You, my lovely Tinhinane] `,
+french: `Mon paradis, c'est de m'allonger sur le canapé, dans tes bras, en rêvant de notre future maison, et de tous ses petits détails. Je n'aurais jamais imaginé être un jour avec quelqu'un avec qui je pourrais imaginer une vie de rêve. \n[Toi, ma chère Tinhinane]`
+},
+      {
+day: 5,
+english: `You made my dreams a reality the second you told me you loved me.`,
+french: `Tu as transformé mes rêves en réalité à l'instant même où tu m'as dit que tu m'aimais.`
+},
+      {
+day: 6,
+english: `It felt like it took an eternity to find you, but I would gladly relive it over and over again if it meant I could spend the rest of my life loving your radiant soul. `,
+french: `J’ai eu l'impression qu'il m'a fallu une éternité pour te trouver, mais je la revivrais encore et encore avec plaisir, si cela signifie passer le reste de ma vie à aimer ton âme rayonnante. `
+},
+      {
+day: 7,
+english: `Every single second of time spent with you is an absolute dream, even when you are taking too long to decide what snacks you want from the store, when you take ages to leave the house, and when you try and distract me from working.\nYou have completely and utterly illuminated my life. `,
+french: `Chaque seconde passée avec toi est un rêve absolu, même quand tu prends une éternité à choisir tes snacks au dépanneur, quand tu prends trois siècles pour sortir de la maison, ou quand tu essaies de me distraire pendant que je travaille.\nTu as complètement et profondément illuminé ma vie. `
+},
+      {
+day: 8,
+english: `With your love i wake up every morning eager to celebrate life. The air that fills my lungs feels sweeter now, more refreshing lighter and nourishing. You have shown me that existence is beautiful and that I deserve to experience this planet with eternal happiness in my heart.\n[You are my J-O-Y] `,
+french: `Avec ton amour, je me réveille chaque matin impatient de célébrer la vie. L’air qui remplit mes poumons est plus doux, plus frais et nourrissant. Tu m'as montré que l'existence est belle et que je mérite de vivre sur cette terre avec une éternelle joie dans le cœur.\n[Tu es ma J-O-I-E] `
+},
+      {
+day: 9,
+english: `Trust me when I tell you that I have never felt love like this before. \n[I {T} love you infi-ni-te-ly] `,
+french: `Crois-moi quand je te dis que je n'ai jamais ressenti un amour comme celui-ci auparavant.\n[Je {T} t'aime infi-ni-ment] `
+},
+      {
+day: 10,
+english: `I love talking to you. The deep conversations, the silly chats, the quiet exchanges in the morning, the cozy late night whispers...\nI will never tire of hearing what's on your mind. `,
+french: `J’adore parler avec toi. Les conversations profondes, les [tigreries] drôles, les échanges silencieux du matin, les chuchotements doux et  réconfortants tard dans la nuit...\nJe ne me lasserai jamais d'entendre ce tu as sur le cœur. `
+},
+      {
+day: 11,
+english: `Thank you for sticking around when I have made it real difficult to do so.\nThank you for being patient with me in the moments where I needed it the most. \nThank you for making me laugh when all i wanted to do was hide away. \nAnd thank you for loving the parts of me I have hated for so long. \nThank you for helping me heal. \n `,
+french: `Merci d’être resté, même quand j’ai rendu les choses vraiment difficiles. \nMerci pour ta patience dans les moments où j’en avais le plus besoin. \nMerci de m’avoir fait rire quand tout ce que je voulais, c’était me cacher. \nEt merci d’aimer les parties de moi que j’ai détestées si longtemps. \nMerci de m’aider à guérir. \n`
+},
+      {
+day: 12,
+english: `Everyone has their unique motivation to get through each day, and for me, all it takes is to see your face; then, I'm ready to conquer the world. `,
+french: `Chacun a sa propre motivation pour affronter chaque jour, et pour moi, il me suffit juste de voir ton beau visage pour me sentir prêt à conquérir le monde. `
+},
+      {
+day: 13,
+english: `Meeting you added an entire spectrum of color to my otherwise colorless life. `,
+french: `Te rencontrer a ajouté tout un spectre de couleurs à ma vie qui était jusque-là sans couleur.`
+},
+      {
+day: 14,
+english: `I promise to respect your boundaries.\nI promise to give you space when you need it. \nI promise to be honest with you at all times. \nI promise to be patient and treat you with the respect and kindness you deserve. \nI promise to hold you tight and never let you go.\nI promise to be your safe space your sanctuary. The one who shields you from life's harsh reality. \nI promise to love you no matter what life throws at us. \n `,
+french: `Je te promets de respecter tes limites. \nJe te promets de te laisser de l’espace quand tu en auras besoin. \nJe te promets d’être honnête avec toi en toutes circonstances. \nJe te promets d’être patient et de te traiter avec le respect et la gentillesse que tu mérites. \nJe te promets de te serrer fort  dans mes bras et de ne jamais te laisser tomber. \nJe te promets d’être ton refuge, ton sanctuaire. Celui qui te protège des dures réalités de la vie. \nJe te promets de t’aimer quoi qu’il arrive et peu importe ce que la vie mettra sur notre chemin. \n`
+},
+      {
+day: 15,
+english: `When I look into your eyes, I can see our future. \nI can see the love we are going to experience together. \nI can tell that no matter what I am feeling or how much I am struggling, as long as I can look into your eyes, everything is going to be absolutely fine. `,
+french: `Quand je plonge mon regard dans tes yeux, je vois notre avenir. \nJe vois tout l’amour que nous allons vivre ensemble. \nJe sais que peu importe ce que je ressens ou les épreuves que je traverse, tant que je peux te regarder dans les yeux, tout ira parfaitement bien. `
+},
+      {
+day: 16,
+english: `You’ll never have to spend another moment feeling unloved, ever again. `,
+french: `Tu ne connaîtras plus jamais le moindre instant sans te sentir profondément aimée, plus jamais.`
+},
+      {
+day: 17,
+english: `Your love feels like those hazy summer days, when you have nothing to do but be out in the sunshine with the warm gentle breeze brushing across on your skin. \nIt feels like freshly baked cookies out of the oven that have cooled down just the right amount, you know when they are all soft and gooey on the inside? \nIt feels like listening to your favorite song over and over again getting goosebumps each time and never getting bored. \nIt just feels right. \n`,
+french: `Ton amour ressemble à ces journées d’été brumeuses, quand il n’y a rien d’autre à faire que d’être dehors, sous le soleil, avec la brise tiède et douce qui caresse la peau. \nÇa ressemble à des biscuits tout juste sortis du four, qui ont eu juste assez de temps pour refroidir, tu sais, quand ils sont encore moelleux et fondants à l’intérieur ? \nÇa ressemble à écouter ta chanson préférée encore et encore, en ayant des frissons à chaque fois, sans jamais s’en lasser. \nÇa semble tout simplement juste.`
+},
+      {
+day: 18,
+english: `You and me becoming the best possible versions of ourselves, fulfilling our dreams and absolutely flourishing together?\nIt's a date. `,
+french: `Toi et moi, devenant les meilleures versions de nous-mêmes, réalisant nos rêves et nous épanouissant pleinement, ensemble? \nC’est un rendez-vous. `
+},
+      {
+day: 19,
+english: `If I could do it all over again I would meet you sooner. \nI would shield you from all the heartbreak. \nI would be the person you needed through a dark periods of your life. But most of all, I would love you the way you should have always been loved. \nThat being said, I am so grateful everything happened as it did because here you are, with a special place reserved in my heart, just for you. `,
+french: `Si je pouvais tout recommencer, je te rencontrerais plus tôt. \nJe te protégerais de tous les chagrins. \nJe serais la personne dont tu avais besoin pendant les périodes sombres de ta vie. Mais surtout, je t’aimerais comme tu aurais toujours dû être aimée. \nCela dit, je suis tellement reconnaissant que tout se soit passé ainsi, parce qu’aujourd’hui, te voilà, avec une place spéciale réservée dans mon cœur, rien que pour toi. `
+},
+      {
+day: 20,
+english: `The more time we spend together, the more I am certain you are the most perfect soul I have ever met. I just know at my core that you are the one person I will spend the rest of my life with.\nI love you so much Tinhinane.`,
+french: `Plus nous passons de temps ensemble, plus je suis certain que tu es la plus belle âme que j’aie jamais rencontrée. Au fond de moi, je sais que tu es la personne avec qui je passerai le reste de ma vie.\nJe t’aime tellement Tinhinane.`
+},
+      {
+day: 21,
+english: `Wallah! I will never give up on you. \n`,
+french: `Wallah! Je ne t’abandonnerai jamais. \n`
+},
+      {
+day: 22,
+english: `As long as I am still breathing, you will always have someone who is so proud of you for everything you have achieved.`,
+french: `Tant que je respire, tu auras toujours quelqu'un qui est tellement fier de toi pour tout ce que tu accomplis.`
+},
+      {
+day: 23,
+english: `You are the love behind every single one of my decisions. You have grounded me, put me on the right track, and made me feel unconditionally loved every step of the way.`,
+french: `Tu es l’amour qui guide chacun de mes choix et chacune de mes décisions. Tu m’as ancré, remis sur le bon chemin, et tu m’as fait sentir aimée, sans condition, à chaque étape et à chaque souffle.`
+},
+      {
+day: 24,
+english: `I know that my « happily ever after » will always be with you.`,
+french: `Je sais que mon « ils vécurent heureux pour toujours » sera toujours avec toi.`
+},
+      {
+day: 25,
+english: `All I can say is thank you for making me feel comfortable in my own skin. I never have to pretend or wear a mask around you, and I have never felt like this before.\nBeing with you has been the most freeing, healing and whole experience of my life so far. `,
+french: `Tout ce que je peux dire c’est merci de me faire sentir bien dans ma peau. Je n’ai jamais besoin de faire semblant ou de porter des masques avec toi, et je n’ai jamais ressenti cela auparavant.\nÊtre avec toi est l’expérience la plus libératrice, réparatrice et entière de toute ma vie.`
+},
+      {
+day: 26,
+english: `You make me want to choose...
+Joy.\nGratitude.\nHappiness.\nAbundance.\nNature.\nNew experiences.\nAn open-mind.\nLove.\nLife.\n`,
+french: `Tu me donnes envie de choisir...
+La joie. \nLa gratitude.\nLe bonheur.\nL’abondance.\nLa nature.\nLes nouvelles expériences.\nL’ouverture d’esprit.\nL’amour.\nLa vie.\n`
+},
+      {
+day: 27,
+english: `Meeting you made me realize that love really does exist and it exists in abundance. The love you give me is raw, unfiltered, and pure. \nIt’s whole.\nAnd it's all mine. `,
+french: `Te rencontrer m’a fait réaliser que l’amour existe vraiment et qu’il existe en abondance. L’amour que tu me donnes est brut, sincère, et pur.\nIl est entier.\nEt il est tout à moi. `
+},
+      {
+day: 28,
+english: `I'm over the moon to spend another day under the same sky as you. `,
+french: `Je suis aux anges de passer un jour de plus sous le même ciel que toi. `
+},
+      {
+day: 29,
+english: `Your inner and outer beauty is beyond my comprehension.\n You're unreal. `,
+french: `Ta beauté, intérieure comme extérieure, dépasse tout ce que je peux comprendre.\nTu es irréelle. `
+},
+      {
+day: 30,
+english: `I’m thinking about you right now and i can't stop. \nI'm thinking about your kind heart, your loving eyes, and your sanctuary of a smile. \nAll I’m ever thinking about is the countdown to being back in your arms again. `,
+french: `Je pense à toi en ce moment et je n’arrive pas à m’arrêter.\nJe pense à ton cœur si doux, à ton regard rempli d’amour, à ton sourire qui ressemble à un refuge. \nTout ce que je fais, c’est compter les jours jusqu’au moment où je serai de nouveau dans tes bras. `
+},
+      {
+day: 31,
+english: `The way you look at me before you kiss me actually send my heart into overdrive. \nI'll never get used to how incredibly beautiful you look in those moments. `,
+french: `La façon dont tu me regardes juste avant de m’embrasser fait littéralement s’emballer mon cœur. \nJe ne m’habituerai jamais à combien tu es incroyablement belle dans ces instants-là. `
+},
+      {
+day: 32,
+english: `The days spent apart just don't feel right. \nThere is an emptiness in my heart that can only be filled when you are by my side. \nNo-one else even comes close. \n`,
+french: `Les jours loin de toi ne sonnent jamais juste. \nIl y a un vide dans mon cœur que seule ta présence peut combler. \nPersonne d’autre ne touche mon cœur comme toi. `
+},
+      {
+day: 33,
+english: `You have taught me that love is not just a word: \nIt’s safety. \nIt’s patience. \nIt’s in conditional kindness. \nIt’s understanding. \nIt’s communication. \nIt’s the comfortable silences. \nIt’s the little things we do for each other.\nIt’s incredible. \nIt’s so much more than I ever could have imagined.\n`,
+french: `Tu m’as appris que l’amour n’est pas qu’un mot : \nC’est la sécurité.\nC’est la patience.\nC’est la bienveillance inconditionnelle.\nC’est la compréhension.\nC’est la communication. \nC’est les silences pleins de confort. \nC’est les petits gestes qu’on fait l’un pour l’autre. \nC’est incroyable. \nC’est bien plus que tout ce que j’aurais pu imaginer. \n`
+},
+      {
+day: 34,
+english: `I'm spending waaaaaaaaaaaay too much time daydreaming about you recently, but I love it.`,
+french: `Je passe beaucoooouuuuup trop de temps à rêvasser de toi récemment, mais j’adore ça.`
+},
+      {
+day: 35,
+english: `The truth is you made me feel human again: an evolved, new and improved version of myself. \nBy simply loving me, you have lifted the burdens that once weighed so heavily on my shoulders. \nI have got a whole new outlook on life now, and it's all thanks to you. \nYou have given me hope and a sense of belonging I haven't felt before. \nI'm starting to enjoy life again. \n`,
+french: `La vérité, c’est que tu m’as fait me sentir à nouveau humain : une version évoluée, nouvelle et améliorée de moi-même. \nRien qu’en m’aimant, tu as soulevé les fardeaux qui pesaient si lourdement sur mes épaules. \nJ’ai désormais une toute nouvelle vision de la vie, et c’est grâce à toi. \nTu m’as donné de l’espoir et un sentiment d’appartenance que je n’avais jamais ressenti auparavant. \nJe recommence à aimer la vie. \n`
+},
+      {
+day: 36,
+english: `You are my favorite place, and I never want to be anywhere else. `,
+french: `Tu es mon endroit préféré, et je ne veux jamais être ailleurs. `
+},
+      {
+day: 37,
+english: `I have never met anyone whose heart is as beautiful as their face. `,
+french: `Je n’ai jamais rencontré quelqu’un dont le cœur est aussi beau que le visage. `
+},
+      {
+day: 38,
+english: `Stop worrying about the ways you are being perceived. \nNo one is judging you as hard and meticulously as you are judging yourself. \nYou don't need to change a thing.\n[You are Be-you-tiful]`,
+french: `Arrête de t’inquiéter de la manière dont tu es perçue. \nPersonne ne te juge aussi durement et minutieusement que toi-même. \nTu n’as pas besoin de changer quoi que ce soit.\n[Tu es Be-you-tiful]`
+},
+      {
+day: 39,
+english: `I will do everything in my power to release the pain and suffering from your past and make sure that only beautiful things happen to you from here. I can't protect you from everything, but I will do my best to make sure you are safe, forever.`,
+french: `Je ferai tout ce qui est en mon pouvoir pour apaiser la douleur et les blessures de ton passé, et pour veiller à ce que désormais, seules de belles choses t’arrivent. Je ne peux pas te protéger de tout, mais je ferai de mon mieux pour que tu sois en sécurité, pour toujours.`
+},
+      {
+day: 40,
+english: `The capacity at which you are able to love has genuinely astounded me. \nIt’s that fairytale type of feeling. \nIt's safe it's secure, and it's magic. \n`,
+french: `La capacité que tu as d’aimer m’a sincèrement bouleversée. \nC’est ce genre de sentiment qu’on ne trouve que dans les contes de fées. \nC’est doux, c’est rassurant, et c’est magique. \n`
+},
+      {
+day: 41,
+english: `I will do everything in my power to make sure life wraps around you as gently as possible, easing your worries and making sure your time on this planet as peaceful as it can be. `,
+french: `Je ferai tout ce qui est en mon pouvoir pour que la vie t’entoure avec le plus de douceur possible, qu’elle apaise tes inquiétudes et rende ton passage sur cette terre aussi paisible qu’il peut l’être.`
+},
+      {
+day: 42,
+english: `You make it easy to see the beauty in everything.`,
+french: `Avec toi, il devient facile de voir la beauté en tout.`
+},
+      {
+day: 43,
+english: `To be honest, you have completely blown my mind. Well and true. Every day I wake up in utter disbelief when I remember that I am the lucky one that gets to love you. \nI'm the luckiest human to walk this Earth.`,
+french: `Pour être honnête, tu as complètement bouleversé mon monde. Vraiment et profondément. Chaque jour, je me réveille dans un émerveillement total en me souvenant que c’est moi, le chanceux, qui a le privilège de t’aimer. \nJe suis l’être humain le plus chanceux de la planète.`
+},
+      {
+day: 44,
+english: `Please start giving yourself the love you give so freely to everyone else.`,
+french: `S’il te plaît, commence à te donner l’amour que tu offres si librement aux autres.`
+},
+      {
+day: 45,
+english: `The thing about us is, we just click. Our relationship is the most relaxing, wholesome, fulfilling and perfect connection I've ever experienced. \nI honestly don't know what I did to get so lucky.`,
+french: `Le truc avec nous, c’est qu’on se comprend naturellement. Notre relation est la plus apaisante, sincère, complète et parfaite que je n’aie jamais espérée. \nHonnêtement, je ne sais pas ce que j’ai fait pour avoir autant de chance.`
+},
+      {
+day: 46,
+english: `I now look at the heartbreak and sadness in my past as gentle nudges, re-directing me to you. You were worth every second I spent waiting for the right one, and I would do it all over again if it meant I got to experience life with my soulmate by my side.`,
+french: `Je vois maintenant les chagrins et la tristesse de mon passé comme de douces impulsions qui me redirigeaient vers toi. Tu valais chaque seconde que j’ai passée à attendre la bonne personne, et je recommencerais tout, encore et encore, si cela signifiait vivre cette vie avec mon âme sœur à mes côtés.`
+},
+      {
+day: 47,
+english: `We are a power couple. \nI'm so proud of us. \nLet's keep absolutely smashing life together. \nI love you.`,
+french: `Nous sommes un couple puissant. \nJe suis tellement fier de nous. \nContinuons à vivre pleinement et à profiter de la vie ensemble. \n Je t’aime.`
+},
+      {
+day: 48,
+english: `Life is hard, but you make it so much easier. I just know that tackling hurdles with you by my side will make every challenge feel like an adventure worth embarking on.`,
+french: `La vie est dure, mais tu la rends tellement plus douce. Je sais qu’avec toi à mes côtés, chaque obstacle deviendra une aventure qui vaut la peine d’être vécue.`
+},
+      {
+day: 49,
+english: `There are so many people that want to see you succeed. Never forget that there will always be someone cheering you on from the outside.`,
+french: `Il y a tant de personnes qui veulent te voir réussir. N’oublie jamais qu’il y aura toujours quelqu’un, quelque part, qui t’encourage de tout cœur, même de loin.`
+},
+      {
+day: 50,
+english: `I just want you to know, it doesn't matter when or where, I will always, ALWAYS, be there for you.`,
+french: `Je veux juste que tu saches que peu importe le moment ou l’endroit, je serai toujours, TOUJOURS là pour toi.`
+},
+      {  
+day: 51,
+english: `Even in my wildest dreams, I could never have thought up someone as beautiful as you.`,
+french: `Même dans mes rêves les plus fous, je n’aurais jamais pu imaginer une personne aussi belle que toi.`
+},
+      {
+day: 52,
+english: `I love how we are the exact same card of weird. When we are together, we make the most mundane of things exciting.\nI love doing life with you.`,
+french: `J’adore le fait qu’on partage exactement le même genre de folie. Quand on est ensemble, même les choses les plus banales deviennent passionnantes.\nJ’adore faire la vie avec toi.`
+},
+      {
+day: 53,
+english: `I can't wait to experience life with you, savoring simple moments like watching the snow from our balcony and strolling through the park hand in hand… Coubertin or Wilfrid-Bastien Park?\nAs we journey together, I know we will create countless memories, and one day, we will look back on our story and smile.\nOur adventures are just beginning.`,
+french: `J’ai tellement hâte de vivre la vie à tes côtés, de savourer les petits moments comme regarder la neige tomber depuis notre balcon ou marcher main dans la main dans les rues de Montréal\nAu fil de notre chemin ensemble, je sais que nous créerons une multitude de souvenirs, et qu’un jour, nous repenserons à notre histoire avec le sourire.\nNos aventures ne font que commencer.`
+},
+      {
+day: 54,
+english: `Watching you smile fills me with a love I never knew I was capable of feeling.\nKeep on smiling baby.`,
+french: `Te voir sourire me remplit d’un amour que je ne pensais même pas pouvoir ressentir un jour.\nContinue de sourire, ma chérie.`
+},
+      {
+day: 55,
+english: `You have made me believe in things I never thought I could have. True love, soulmates, fate...\nYou have opened my eyes to a completely new world, and what beautiful world it is.`,
+french: `Tu m’as fait croire en des choses auxquelles je ne pensais jamais pouvoir croire : le véritable amour, les âmes sœurs, le destin…\nTu as ouvert mes yeux sur un monde complètement nouveau; et quel monde magnifique!`
+},
+      {
+day: 56, 
+english: `Your heart is golden.`,
+french: `Tu as un cœur en or.`
+},
+      {
+day: 57,
+english: `The grass is greener wherever you are.`,
+french: `L’herbe est toujours plus verte là où tu es.`
+},
+      {
+day: 58,
+english: `You are good for my mental health.\nFor my nervous system.\nFor my thoughts, and for my emotions.\nFor my heart, and for my soul.\nYou are good for me.`,
+french: `Tu fais du bien à ma santé mentale.\nÀ mon système nerveux.\nÀ mes pensées, et à mes émotions.\nÀ mon cœur, et à mon âme.\nTu me fais du bien.`
+},
+      {
+day: 59,
+english: `You radiate the type of energy that illuminates not only the room but also the surrounding corridors. The kind of energy that leaves people feeling better after being in its presence.\nYou are beautiful; in more ways than the human eye can see.`,
+french: `Tu rayonnes d’une énergie qui illumine non seulement la chambre, mais aussi les couloirs autour. Le genre d’énergie qui laisse les gens apaisés et réconfortés, simplement pour l’avoir côtoyée.\nTu es magnifique; bien plus que ce que l’œil humain peut percevoir.`
+},
+      {
+day: 60,
+english: `At the core of it, you have made me fall in love with life again.`,
+french: `Au fond, tu m’as fait retomber en amour avec la vie.`
+},
+      {
+day: 61,
+english: `You make me want to move through my fears, to tackle my demons, and to love my inner child to their core.\nYou have completely elevated my life.\nYou have changed me.`,
+french: `Tu me donnes envie d’avancer malgré mes peurs, d’affronter mes démons, et d’aimer mon enfant intérieur jusqu’au plus profond de son être.\nTu as complètement élevé ma vie à un tout autre niveau.\nTu m’as transformé.`
+},
+      {
+day: 62,
+english: `You have everything you need within you to live the life you have always dreamed of.\nI have never doubted you, not for one second.`,
+french: `Tu as tout ce qu’il te faut en toi pour vivre la vie dont tu as toujours rêvé.\nJe n’ai jamais douté de toi, pas une seule seconde.`
+},
+      {
+day: 63, 
+english: `Me and you? It's a date. Dancing in our kitchen at 3 in the morning, ordering takeout and put in our favorite movie on, going on rainy walks and coming home to fall asleep in each other's arms, booking holidays to new places and exploring the world...\nThis is just the beginning.`,
+french: `Toi et moi ? C’est un rendez-vous. Danser dans notre cuisine à trois heures du matin, commander à manger [Goût du Beld?] et mettre notre film préféré, partir en balade sous la pluie et rentrer pour s’endormir dans les bras l’un de l’autre. Réserver des vacances dans des endroits inconnus et explorer le monde...\nCe n’est que le début.`
+},
+      {
+day: 64,
+english: `The truth is, you handle me better than I handle myself.`,
+french: `La vérité, c’est que tu me comprends et me gères mieux que je ne le fais moi-même.`
+},
+      {
+day: 65,
+english: `Your radiate sunshine.\nI'm ridiculously drawn to your energy.`,
+french: `Tu rayonnes comme le soleil.\nJe suis follement attiré par ton énergie.`
+},
+      {
+day: 66,
+english: `When I'm with you, my mind is quiet, my thoughts are calm, and my heart is full.`,
+french: `Quand je suis avec toi, mon esprit se calme, mes pensées s’apaisent, et mon cœur est plein.`
+},
+      {
+day: 67,
+english: `What sets you apart from the rest is your ability to love. To listen, to be patient, present, and loving during difficult conversations. To make me laugh when all I want to do is cry. But most of all, your ability to dream, to grow, and to heal no matter what life throws at you.You are a massive inspiration of mine, I learned so much about life just by being with you.`,
+french: `Ce qui te distingue des autres, c’est ta capacité à aimer. À écouter, à faire preuve de patience, à être présent et aimant même pendant les conversations difficiles.
+À me faire rire quand tout ce que j’ai envie de faire, c’est pleurer. Mais surtout, ta capacité à rêver, à grandir, et à guérir, peu importe ce que la vie met sur ton chemin. Tu es une immense source d’inspiration pour moi, j’ai appris tellement de choses sur la vie simplement en étant à tes côtés.`
+},
+      {
+day: 68,
+english: `If only I could go back in time and show the younger version of me who I ended up falling in love with.\nThey would be absolutely over the moon.`,
+french: `Si seulement je pouvais remonter le temps et montrer à la version plus jeune de moi la personne dont je suis tombé amoureux…\nElle serait absolument aux anges.`
+},
+      {
+day: 69,
+english: `You just make existing so much easier. Lighter. More enjoyable. Life has become a pleasure to be a part of, and it's all because of you.`,
+french: `Tu rends simplement le fait d’exister tellement plus facile. Plus léger. Plus agréable. La vie est devenue un plaisir d’en faire partie, et c’est entièrement grâce à toi.`
+},
+      {
+day: 70,
+english: `Each moment we share feels like the perfect chapter gracefully unfolding.`,
+french: `Chaque moment que nous partageons ressemble à un chapitre parfait qui se déploie avec grâce.`
+},
+      {
+day: 71,
+english: `To say you are a dream come true with honestly be the understatement of the century.`,
+french: `Dire que tu es un rêve devenu réalité serait, honnêtement, l’euphémisme du siècle.`
+},
+      {
+day: 72,
+english: `I'm yours.\nNow,\ntomorrow,\nforever!\nThere will never be a day when I don't love you more than life itself.`,
+french: `Je suis à toi.\nmaintenant,\ndemain,\npour toujours.\nIl n’y aura jamais un jour où je ne t’aimerai pas plus que la vie elle-même.`
+},
+      {
+day: 73,
+english: `I have looked at your face 5 million  times, but my heart still skips a beat when I see those eyes. Somehow, I'm still getting completely lost in them.`,
+french: `J’ai regardé ton visage cinq millions de fois, mais mon cœur saute encore un battement quand je croise ton regard. D’une manière ou d’une autre, je me perds encore complètement dans tes yeux.`
+},
+      {
+day: 74,
+english: `We have the best kind of love. It's a love built on trust, respect, and the real, deep, authentic connection. We understand each other in ways that words can't always express. It's forever a source of strength and comfort, and something we can both rely on no matter what.
+Our love is in the laughter we share, it's in the dreams we create, and the warmth of our embrace. It's love that somehow grows stronger every waking moment.\nI love our love.
+I love our Ninhinane.`,
+french: `Nous avons le plus beau des amours. Un amour construit sur la confiance, le respect et une connexion vraie, profonde et authentique. Nous nous comprenons d’une façon que les mots ne peuvent pas toujours exprimer. C’est une source constante de force et de réconfort, sur laquelle nous pouvons compter quoi qu’il arrive.
+Notre amour vit dans les rires que nous partageons, dans les rêves que nous construisons, dans la chaleur de nos étreintes. C’est un amour qui, d’une manière presque magique, devient plus fort à chaque instant.\nJ’aime notre amour.
+J'aime notre Ninhinane.`
+},
+      {
+day: 75,
+english: `I knew it from the moment I saw your smile.\nI knew it from the moment you told me you love me.\nI knew it in the moments I caught myself smiling uncontrollably every time you crossed my mind.\nI knew it.\nIt's always been you.`,
+french: `Je l’ai su dès l’instant où j’ai vu ton sourire.\nJe l’ai su dès que tu m’as dit “je t’aime”.\nJe le sais à chaque moment où je me surprends à sourire incontrôlablement rien qu’en pensant à toi.\nJe l’ai toujours su.\nÇa a toujours été toi.`
+},
+      {
+day: 76,
+english: `You have made me feel something I never thought possible.\nYou have made me feel a type of love I never thought I deserved.\nYou make me feel warm, safe and important.\nYou make me feel like I can take on anything the world throws at me.\nI have never felt like this before.`,
+french: `Tu m’as fait ressentir quelque chose que je n’aurais jamais cru possible.\nTu m’as fait connaître un amour que je ne pensais pas mériter.\nTu me fais sentir au chaud, en sécurité, et importante.\nTu me donnes la force d’affronter tout ce que le monde peut me lancer.\nJe n’ai jamais ressenti ça auparavant.`
+},
+      {
+day: 77,
+english: `I have faith that no matter what unfolds in our lives, our paths will always lead us back to each other...
+[Back in each other's arms]`,
+french: `J’ai la certitude que, peu importe ce que la vie mettra sur notre chemin, nos routes finiront toujours par nous ramener l’un vers l’autre... 
+[L'un dans les bras de l'autre]`
+},
+      {
+day: 78,
+english: `Guess what?\nI'm yours now, and i will be yours forever.`,
+french: `Devine quoi ?\nJe suis à toi maintenant, et je le resterai pour toujours.`
+},
+      {
+day: 79,
+english: `I promise to love you with all the love I have.\nI promise to spend my time thinking of new ways to bring a smile to your face.\nI promise to make you feel like the most important person on this planet.\nI promise to hold you in the hard times and the good.\nI promise that no matter what happens, I will always make you feel loved, cherished and adored.`,
+french: `Je te promets de t’aimer de tout l’amour que j’ai en moi.\nJe te promets de passer mon temps à chercher de nouvelles façons de faire naître un sourire sur ton visage.\nJe te promets de te faire sentir comme la personne la plus importante sur cette planète.\nJe te promets de te serrer fort, dans les moments difficiles comme dans les plus heureux.\nJe te promets que, quoi qu’il arrive, tu te sentiras toujours aimée, chérie et adorée.`
+},
+      {
+day: 80,
+english: `I still remember the butterflies I got when we first started talking. There is a reason why I remember them so vividly, and it's because I still get them to this day.\nMy excitement for you never really went a way.`,
+french: `Je me souviens encore des papillons dans le ventre que j’ai eus quand on a commencé à se parler.
+Si je m’en souviens aussi clairement, c’est parce qu’ils sont toujours là aujourd’hui.\nMon enthousiasme pour toi n’est jamais vraiment parti.`
+},
+      {
+day: 81,
+english: `The thing about us is, we talk to each other about anything and everything.
+It feels like we have known each other our whole lives, and no matter what the world throws at us we will always be standing side by side through it all.
+With you, everything changes, and it changes for the better.`,
+french: `Ce qu’il y a de merveilleux entre nous, c’est qu’on peut se parler de tout et de rien. On dirait qu’on se connaît depuis toujours, et quoi que le monde nous réserve, on restera toujours côte à côte, unis face à tout.
+Avec toi, tout change… et ça change pour le meilleur.`
+},
+      {
+day: 82,
+english: `At the end of the day...\nYou are the best person I want to come home to.\nYou are the person I want to cry to.\nYou're the person I want to look at as I drift off to sleep.\nYou are the person I want to hold in my arms through the difficult times.\nYou are the person for me.`,
+french: `À la fin de la journée...
+Tu es la meilleure personne que j’ai envie de retrouver en rentrant chez moi, car mon véritable "chez-moi" est entre tes bras.  
+La personne à qui je veux pleurer.
+La personne que je veux regarder en m’endormant.
+La personne que je veux serrer dans mes bras quand la vie devient difficile.
+Tu es la personne faite pour moi.`
+},
+      {
+day: 83,
+english: `You have taken away any fear, any doubt and any pain that my heart was holding on to.\nI will never be able to thank you enough for what you have done for me.`,
+french: `Tu as effacé toutes les peurs, toutes les douleurs et tous les doutes que mon cœur gardait en lui.\nJe ne pourrai jamais te remercier assez pour tout ce que tu as fait pour moi.`
+},
+      {
+day: 84,
+english: `To put it simply there is not one part of you I don't want.`,
+french: `Pour le dire simplement, il n’y a pas une seule partie de toi que je ne désire pas.`
+},
+      {
+day: 85,
+english: `My mind is like a cinema, and you are showing on every screen.`,
+french: `Mon esprit est comme un cinéma, et tu passes sur tous les écrans.`
+},
+      {
+day: 86,
+english: `It's a connection beyond words, and there's no need for explanation because we are the only ones who need to understand. It transcends any language on this Earth; it's an undeniable force. Our silent understanding speaks volumes through the way we look at each other, laugh together and navigate life side by side.`,
+french: `C’est une connexion qui dépasse les mots, un lien qui n’a nul besoin d’explications, car on est les seuls à devoir comprendre. Elle transcende toutes les langues de ce monde ; c’est une force profonde et incontestable. Notre compréhension silencieuse dit tout à travers nos regards, nos rires partagés, et notre manière d’avancer ensemble sur le chemin de la vie.`
+},
+      {
+day: 87,
+english: `If I ever lost you, I’d be losing my soulmate, my best friend, my happiness, my smile, and my reason to wake up every day. So let’s just agree — that can never happen.`,
+french: `Si je te perdais un jour, je perdrais mon âme sœur, ma meilleure amie, mon bonheur, mon sourire, et ma raison de me lever chaque matin. Alors on est d’accord : ça ne doit jamais arriver.`
+},
+      {
+day: 88,
+english: `I never knew feeling could reach so deep into my soul until that moment you smile at me.`,
+french: `Je n'avais jamais su qu'un sentiment pouvait aller si profondément dans mon âme… jusqu'à ce moment où tu m'as souri.`
+},
+      {
+day: 89,
+english: `You are the comfort on my dark days, the sunshine on the brightest ones.\nYou are my peace in the chaos, and the security amidst the sadness.`,
+french: `Tu es le réconfort de mes jours sombres, le soleil de mes jours les plus lumineux.\nTu es ma paix dans le chaos, et ma sécurité au milieu de la tristesse.`
+},
+      {
+day: 90,
+english: `So many people enjoy being in your company. You will never be able to see yourself the way everyone else does, but we all notice your beauty, your patience, your kindness, your aura, and your authenticity. You inspire so many people without realizing, and that's just one of the millions of reasons I adore you.`,
+french: `Tellement de gens aiment être en ta présence.
+Tu ne pourras jamais te voir comme les autres te voient, mais nous remarquons tous ta beauté, ta patience, ta gentillesse, ton aura et ton authenticité.
+Tu inspires tant de personnes sans même t’en rendre compte, et c’est juste l’une des millions de raisons pour lesquelles je t’adore.`
+},
+      {
+day: 91,
+english: `You make loving so easy.\nSomehow, it is exciting, exhilarating, and Non-Stop, at the same time as being calm, silent, and solid.\nYou are everything I could have ever dreamed of and so, so much more.`,
+french: `Tu rends l’amour si facile.\nD’une manière étrange et mystérieuse, c’est à la fois excitant, exaltant, et ininterrompu, tout en étant calme, silencieux, et solide.\nTu es tout ce dont j’ai toujours rêvé, et tellement, tellement plus encore.`
+},
+      {
+day: 92,
+english: `FYI:\nI am literally never NOT thinking about you.`,
+french: `PTI :\nJe ne suis littéralement jamais en train de PAS penser à toi.`
+},
+      {
+day: 93,
+english: `I have a message for you:\nI have loved you in the moments when you have hated yourself.\nI have loved you in the darkest corners of your heart, where you so no one could ever reach.\nI have loved you through every heated discussion and every sleepless night.\nI have loved you forever and a day already, and every moment in between.`,
+french: `J’ai un message pour toi :\nJe t’ai aimé dans les moments où tu ne pouvais pas t’aimer toi-même.\nJe t’ai aimé dans les recoins les plus sombres de ton cœur, ceux où tu pensais que personne ne pourrait jamais entrer.\nJe t’ai aimé à travers chaque dispute, chaque nuit sans sommeil.\nJe t’ai aimé depuis l'éternité et pour l'infini, et un jour de plus, et dans chaque instant entre les deux.`
+},
+      {
+day: 94,
+english: `If I could have anything on this Earth right now, it would be me and you. Cozied up in a warm blanket, with our favorite snacks, and the gentle rhythm of rain pouring down outside.
+We would have no obligations the next day, and we would stay up all night watching our favorite shows and only stopping to chat and cuddle.\n
+I need this.\n
+I need you.`,
+french: `Si je pouvais avoir n’importe quoi sur cette Terre en ce moment, ce serait toi et moi. Bien au chaud sous une couverture, avec nos snacks préférés, et le doux son de la pluie qui tombe dehors.
+Aucune obligation le lendemain, juste nous deux, à passer la nuit à regarder nos séries préférées, en s’arrêtant seulement pour parler et se câliner.
+J’ai besoin de ça.
+J’ai besoin de toi.`
+},
+      {
+day: 95,
+english: `I'm not just here for the good days and the pretty parts of you.\nI am here for the days when you can't get out of bed.\nI am here for the days when you just can't manage a smile.\nI will be here for you every single day, no matter what.`,
+french: `Je ne suis pas là seulement pour les beaux jours et les jolies parties de toi.\nJe suis là pour les jours où tu n’arrives pas à sortir du lit.\nJe suis là pour les jours où tu n’arrives même pas à sourire.\nJe serai là pour toi chaque jour, quoi qu’il arrive.`
+},
+      {
+day: 96,
+english: `Thank you for being the calm... in the storm... that is my mind.`,
+french: `Merci d’être le calme... dans la tempête... qui est mon esprit.`
+},
+      {
+day: 97,
+english: `I honestly couldn't ask for a healthier, happier, more complete, and fulfilling relationship if I tried.
+This is as good as it gets, and I'm going to savor every single second of it.\nThis love is special.`,
+french: `Honnêtement, je ne pourrais pas rêver d’une relation plus saine, plus heureuse, plus complète et épanouissante. C’est le summum, et je compte savourer chaque seconde.\nCet amour est vraiment unique.`
+},
+      {
+day: 98,
+english: `You are my safe haven. my sanctuary, the place where I find peace and solace.`,
+french: `Tu es mon refuge. Mon sanctuaire, l’endroit où je trouve la paix et l’apaisement.`
+},
+      {
+day: 99,
+english: `I never knew my heart was missing a piece of itself, until you came along.`,
+french: `Je n’avais jamais su qu’il manquait une partie de mon cœur… jusqu’à ce que tu sois entrée dans ma vie.`
+},
+      {
+day: 100,
+english: `I'm yours.\n100000000000000000000% yours.\nYou have completely and utterly blown me away.\nI genuinely didn't think it was possible for people to be this good, and yet here I am, absolutely head over heels for the most incredible human to walk this Earth.\nI feel like I have hit the jackpot.`,
+french: `Je suis à toi.
+À 100000000000000000000 % à toi.
+Tu m’as complètement et totalement époustouflée.
+Je ne pensais pas que quelqu’un pouvait être aussi exceptionnel, et pourtant me voilà, complètement folle amoureuse de l’être humain le plus incroyable à avoir jamais marché sur cette Terre.
+J’ai l’impression d’avoir décroché le gros lot.`
+},
+      {
+day: 101,
+english: `My love for you is the one thing in this life... that I will never doubt.`,
+french: `Mon amour pour toi est la seule certitude de ma vie... celle que je ne remettrai jamais en question.`
+},
+      {
+day: 102,
+english: `You bring out the vulnerable side of me I've tried to hide for so long.`,
+french: `Tu fais ressortir le côté vulnérable de moi que j’ai essayé de cacher pendant si longtemps.`
+},
+      {
+day: 103,
+english: `Not only did I love you from the beginning, but I am falling even harder for the person you are growing to become. When I think about how much you are flourishing, it gives me goosebumps. You know your worth, and you are consistently striving for more.\nYou are the most down to earth, authentic, inspirational person I have ever met.`,
+french: `Non seulement je t’ai aimée dès le début, mais je tombe encore plus amoureux de la personne que tu es en train de devenir. Quand je pense à la manière dont tu t’épanouis, j’en ai des frissons. Tu connais ta valeur, et tu vises constamment plus haut. Tu es la personne la plus authentique, inspirante et modeste que j’aie jamais rencontrée.`
+},
+      {
+day: 104,
+english: `This love is healthy.\nIt's calm.\nIt's patient.\nIt's whole.\nIt's kind.\nIt's understanding.\nIt's everything anyone could ever want.`,
+french: `Cet amour est sain.\nIl est calme.\nIl est patient.\nIl est entier.\nIl est doux.\nIl est compréhensif.\nIl est tout ce que l’on pourrait rêver d’avoir.`
+},
+      {
+day: 105,
+english: `I just want to remind you that everything is going to be okay.\nIt's all going to work out for you.\nThe worries that cloud your mind will dissipate, and one day you will wake up feeling lighter.\nAnd until then, I will be right by your side to lighten the load.\nThe sadness you feel isn't forever.\nI've got you.`,
+french: `Je veux juste te rappeler que tout ira bien.
+Tout va s’arranger pour toi.
+Les inquiétudes qui obscurcissent ton esprit finiront par se dissiper, et un jour tu te réveilleras le cœur plus léger.
+Et jusqu’à ce jour, je serai à tes côtés pour alléger le fardeau.
+La tristesse que tu ressens n’est pas éternelle.
+Je suis là pour toi.`
+},
+      {
+day: 106,
+english: `I am still as obsessed with you as the day I first laid eyes on you.\nI am obsessed, not in neurotic way, but in healthy, whole, and real way.\nYou are my everything.`,
+french: `Je suis toujours aussi obsédé par toi que le jour où j’ai posé les yeux sur toi pour la première fois.\nObsédé, pas d’une manière névrosée, mais d’une façon saine, entière et authentique.\nTu es tout pour moi.`
+},
+      {
+day: 107,
+english: `Some of my favorite times have been just laying in bed with you for hours, talking about nothing at all, but everything at the same time.\nI love those moments with my whole heart.`,
+french: `Certains de mes moments préférés sont ceux passés allongé avec toi pendant des heures, à parler de rien… mais en même temps de tout.
+J’aime ces instants de tout mon cœur.`
+},
+      {
+day: 108,
+english: `The world seems so much quieter, kinder, and gentler when you are holding my hand.`,
+french: `Le monde me paraît tellement plus calme, plus doux et plus tendre quand tu tiens ma main.`
+},
+      {
+day: 109,
+english: `This is just a quick reminder that you are the most incredible person I have ever met and I will love you until the end of time.\nYou deserve to have an amazing day today.`,
+french: `Ceci est juste un petit rappel : 
+Tu es la personne la plus incroyable que j’aie jamais rencontrée, et je t’aimerai jusqu’à la fin des temps.\nTu mérites de passer une journée magnifique aujourd’hui.`
+},
+      {
+day: 110,
+english: `I am just so excited for the little things.\n
+Waking up and hearing you sing in the shower.\n
+Checking out cute coffee shops hand in hand.\n
+Going for a rainy walks and coming back to our cozy home.\n
+Bbq's in our garden on a warm summer's evening.\n
+Falling asleep on the sofa until 3AM, and stumbling back into bed knowing we get to lie in the next day.\n
+I think about our life together everyday, and I get butterflies in abundance.\n
+Our life is going to be beautiful and do you know why I know that?\n
+Because our love already is.`,
+french: `Je suis tellement impatient pour toutes ces petites choses.\n
+Me réveiller en t’entendant chanter sous la douche.\n
+Découvrir des petits cafés mignons, main dans la main.\n
+Faire des balades sous la pluie et rentrer dans notre maison toute douillette.\n
+Organiser des barbecues dans notre jardin, un soir d’été chaud.\n
+M’endormir sur le canapé jusqu’à 3 heures du matin, puis retourner au lit en titubant, en sachant qu’on pourra faire la grasse matinée le lendemain.\n
+Je pense à notre vie ensemble tous les jours, et j’en ai des papillons plein le ventre.\n
+Notre vie va être magnifique, et tu sais pourquoi j’en suis sûr?\n
+Parce que notre amour l’est déjà.`
+},
+      {
+day: 111,
+english: `Not only will you never be able to comprehend my love for you, but neither will I.`,
+french: `Non seulement tu ne pourras jamais comprendre l’amour que j’ai pour toi, mais moi non plus.`
+},
+      {
+day: 112,
+english: `You bring out the side in me I've longed for, for what feels like an eternity.\nYou've not discovered the hidden door in my heart, but I've never trusted someone with that secret key as completely as I trust you.`,
+french: `Tu fais ressortir en moi cette part que je désirais depuis ce qui me semble être une éternité.\nTu n’as pas seulement découvert la porte secrète de mon cœur mais tu es la seule personne à qui j’ai confié la clé, en toute confiance, sans la moindre hésitation.`
+},
+      {
+day: 113,
+english: `The thing about you is, you are patient even when you are having a bad day.\nYou bring your own light into the world even when you are feeling under the weather.\nYour energy is unmatched.\nThank you for the laughs, the smiles, and the butterflies.\nThank you for EVERYTHING!`,
+french: `Ce qu’il y a de beau chez toi, c’est que tu restes patiente même quand ta journée est difficile.\nTu apportes ta propre lumière au monde, même quand tu ne te sens pas au meilleur de ta forme.\nTon énergie est unique.\nMerci pour les rires, les sourires, et les papillons.\nMerci pour TOUT.`
+},
+      {
+day: 114,
+english: `I finally found my place in the world.\nit's with you.`,
+french: `J’ai enfin trouvé ma place dans ce monde.\nElle est avec toi.`
+},
+      {
+day: 115,
+english: `Our first home is going to be our safe space. It's gonna be cozy, warm, and welcoming. When we lock the doors and turn the lamps on at night, we are going to feel like we are in our own little bubble. Our house will be filled with our love for each other, happy memories, and so many laughs.\n
+Just you and I.`,
+french: `Notre premier chez-nous sera notre refuge. Il sera chaleureux, accueillant et douillet. Quand on fermera la porte et qu’on allumera les lampes le soir, on se sentira dans notre petite bulle rien qu’à nous. Notre maison sera remplie de notre amour, de souvenirs heureux, et de tant de rires.\nJuste toi et moi.`
+},
+      {
+day: 116,
+english: `We don't argue, we communicate and gain perspective. We are not passive-aggressive, we speak openly and seek understanding. Our relationship is built on trust, respect, and a commitment to growing together. it's an unbreakable bond.\nI'm so proud of us.`,
+french: `On ne se dispute pas, on communique et on élargit notre perspective. On n’est pas indirects, on parle ouvertement et on vise la compréhension. Notre relation est fondée sur la confiance, le respect et l’engagement à grandir ensemble. C’est un lien indestructible.
+Je suis tellement fier de nous.`
+},
+      {
+day: 117,
+english: `There is an infinite amount of beauty in the world, and I'll do everything I can to make sure you get to see every single little bit of it.
+I will help you see the sunshine on the darkest days. I'll take you to places you can't even comprehend right now.
+I'm going to do everything in my power to make your time on this planet as perfect as it can get.\nYou deserve the best.`,
+french: `Il y a une infinité de beauté dans ce monde, et je ferai tout ce qui est en mon pouvoir pour que tu en voies chaque petit fragment.
+Je t’aiderai à voir la lumière même dans les jours les plus sombres. Je t’emmènerai dans des endroits que tu ne peux même pas encore imaginer.
+Je vais tout faire pour que ton passage sur cette Terre soit le plus beau possible.\nTu mérites ce qu’il y a de meilleur.`
+},
+      {
+day: 118,
+english: `Being without you makes me homesick.`,
+french: `Être loin de toi me donne le mal du cœur, comme si j’étais loin de chez moi... 
+[C'est tout simplement parce que tu es mon chez-moi]`
+},
+      {
+day: 119,
+english: `Falling in love with you resulted in me falling in love with being alive, and that is the biggest gift than can ever be given.`,
+french: `Tomber en amour avec toi m'a fait tomber en amour avec la vie, et c’est le plus beau cadeau qu’on puisse jamais recevoir.`
+},
+      {
+day: 120,
+english: `I want you.
+I want all of you.
+I want you when you are happy, and when you are sad.
+I want to wake up next to you every morning and fall asleep next to you every night.
+I want to stare at the stars with you and talk for hours about everything you have ever dreamed of doing.
+I want to travel around the world with your hand in mine, and I want to experience everything this life has to offer with you.
+But most of all, I want you, and I want us.\n
+Forever.`,
+french: `Je te veux.
+Je te veux toute entière.
+Je te veux quand tu es heureuse, et quand tu es triste.
+Je veux me réveiller à tes côtés chaque matin et m’endormir à tes côtés chaque soir.
+Je veux regarder les étoiles avec toi et parler pendant des heures de tout ce que tu as toujours rêvé de faire.
+Je veux explorer le monde avec ta main dans la mienne, et je veux vivre tout ce que cette vie a à offrir avec toi.
+Mais plus que tout, je te veux toi, et je veux "nous".
+Pour toujours.`
+},
+      {
+day: 121,
+english: `You are the other half of me.\n
+The day we met was the day everything started to make sense.\n
+The pieces of my life finally started to fall into place.\n
+Everything you do fills me with a joy I never knew I could feel, and I know that you are the person I want to spend the rest of my life with.`,
+french: `Tu es ma douce moitié.
+Le jour où nous nous sommes rencontrés, tout a commencé à avoir un sens. Les pièces de ma vie ont enfin commencé à se mettre en place.
+Tout ce que tu fais me remplit d’une joie que je ne savais même pas possible, et je sais que tu es la personne avec qui je veux passer le reste de ma vie.`
+},
+      {
+day: 122,
+english: `Before you go to bed tonight I want you to read this:\n
+You have no idea how many lives you have impacted by just existing.\n
+You don't always see the smile on people's faces after they have been in your company.\n
+You don't see how your energy impacts a difficult situation.\n
+You are not weak for crying, and you are not a failure for ever falling or making a mistake.\n
+At the core of your soul, you are completely wonderful.\n
+Please promise me you won't ever forget that.`,
+french: `Avant que tu t’endormes ce soir, je veux que tu lises ceci :
+Tu n’as aucune idée du nombre de vies que tu touches simplement en existant. Tu ne vois pas toujours les sourires sur les visages après que les gens passent du temps avec toi.
+Tu ne vois pas comment ton énergie transforme les situations difficiles.
+Tu n’es pas faible quand tu pleures, et tu n’es pas un échec quand tu tombes ou fais une erreur.
+Au plus profond de ton âme, tu es absolument merveilleuse.
+S’il te plaît, promets-moi de ne jamais oublier ça.`
+},
+      {
+day: 123,
+english: `I promise to carry your heart with tenderness, patience, and understanding at all times.\nYour love is safe with me.`,
+french: `Je te promets de porter ton cœur avec tendresse, patience et compréhension; à chaque instant.\nTon amour est en sécurité avec moi.`
+},
+      {
+day: 124,
+english: `Thank you for always being there at the exact time I needed you.\nThank you for always making me feel like I deserve to be loved.\nThank you for the endless support you give me.\nThank you for being the light in my life that I needed so badly.\nI love you an incomprehensible amount.`,
+french: `Merci d’avoir toujours été là au moment exact où j’avais besoin de toi.\nMerci de toujours me faire sentir que je mérite d’être aimée.\nMerci pour le soutien sans fin que tu m’apportes.\nMerci d’être la lumière dans ma vie, celle dont j’avais tant besoin.\nJe t’aime d’un amour incompréhensible.`
+},
+      {
+day: 125,
+english: `Please don't ever feel alone.\nI want to remind you that no matter what, I will be here to listen to you until the end of time.\nIt doesn't matter where we are or what we are doing, I'm always going to be here for you.\nThis love is forever.\nI'm not going anyway.`,
+french: `S’il te plaît, ne te sens jamais seule.\nJe veux te rappeler que, quoi qu’il arrive, je serai là pour t’écouter jusqu’à la fin des temps.\nPeu importe où nous sommes ou ce que nous faisons, je serai toujours là pour toi.\nCet amour est pour toujours.\nJe ne vais nulle part.`
+},
+      {
+day: 126,
+english: `No matter how far apart we are from each other, always know that you have a piece of my heart with you.`,
+french: `Peu importe à quelle distance on est loin l'un de l'autre, sache toujours que tu as un morceau de mon cœur avec toi.`
+},
+      {
+day: 127,
+english: `You hold space in my heart that no one else could ever fill.`,
+french: `Tu occupes un espace dans mon cœur que personne d’autre ne pourra jamais remplir.`
+},
+      {
+day: 128,
+english: `I can't wait for the late night giggles.\nI can't wait for the first time we walk into our new home together.\nI can't wait to eat "Goût du Bled" with you while playing our next holiday.\nI can't wait for your face to be the very first thing I see every day.\nI can't wait for the rest of our lives.`,
+french: `J’ai tellement hâte à nos tigreries et fous rires tard dans la nuit.\nJ’ai hâte au premier moment où nous entrerons ensemble dans notre maison.\nJ’ai hâte de manger "Goût du Bled" avec toi tout en planifiant nos prochaines vacances.\nJ’ai hâte que ton visage soit la première chose que je voie chaque matin.\nJ’ai hâte de vivre le reste de notre vie, à deux.`
+},
+      {
+day: 129,
+english: `I can't fix everything for you, but what I can do is make sure you never have to face anything alone.`,
+french: `Je ne peux pas tout réparer pour toi, mais ce que je peux faire, c’est te promettre que tu n’auras jamais à affronter quoi que ce soit toute seule.`
+},
+      {
+day: 130,
+english: `Your presence is magnetic.\nYour energy is magic.\nYour heart is enchanting.\nYour smile heals the part of my soul I thought I couldn't touch.\nYou are perfection.`,
+french: `Ta présence est magnétique.\nTon énergie est magique.\nTon cœur est enchanteur.\nTon sourire guérit la partie de mon âme que je pensais ne pas pouvoir toucher.\nTu es la perfection.`
+},
+      {
+day: 131,
+english: `It's a little embarrassing but, I get really disappointed when I get a message and it's not from you.`,
+french: `C’est un peu embarrassant, mais je suis toujours un peu déçu quand je reçois un message… et que ce n’est pas toi.`
+},
+      {
+
+day: 132,
+english: `You are my favorite smile.\nMy favorite voice.\nMy favorite face.\nMy favorite person.`,
+french: `Tu es mon sourire préféré.\nMa voix préférée.\nMon visage préféré.\nMa personne préférée.`
+},
+      {
+day: 133,
+english: `I wish you could see the stupid grin on my face every time I think of you.`,
+french: `J’aimerais que tu voies le sourire qui s’affiche sur mon visage chaque fois que je pense à toi.`
+},
+      {
+day: 134,
+english: `Always remember I will be by your side through everything life can throw at you.\nAlways remember that you deserve the world.\nAlways remember that you could not possibly be more loved.\nAlways remember that no matter how lost you might feel, I will always find you again.`,
+french: `Souviens-toi toujours que je serai à tes côtés, quoi que la vie te réserve.\nSouviens-toi toujours que tu mérites le monde entier.\nSouviens-toi toujours qu'il est impossible que tu sois plus aimée que tu ne l’es déjà.\nEt souviens-toi que, peu importe à quel point tu te sens perdue, je te retrouverai, toujours.`
+},
+      {
+day: 135,
+english: `I believe that, regardless of when and where, in another existence or on a different planet, you and I will always belong together, side by side, hand in hand, until the end of time.`,
+french: `Je crois que, peu importe le moment ou l’endroit, dans une autre existence ou sur un autre planète, toi et moi serons toujours faits pour être ensemble, côte à côte, main dans la main, jusqu’à la fin des temps.`
+},
+      {
+day: 136,
+english: `As long as I am with you, I will always be home.`,
+french: `Tant que je suis avec toi, je serai toujours chez moi.`
+},
+      {
+day: 137,
+english: `You are the reason I know what love is.`,
+french: `Tu es la raison pour laquelle je sais ce qu’est l’amour.`
+},
+      {
+day: 138,
+english: `I would pay an infinite amount of money for you to spend 1 minute looking at yourself through my eyes.
+Perhaps then, you truly see just how incredible you are.`,
+french: `Je paierais une somme infinie pour que tu passes une seule minute à te regarder à travers mes yeux.
+Peut-être qu’alors, tu verrais vraiment à quel point tu es incroyable.`
+},
+      {
+day: 139,
+english: `You are the safe haven my mind goes to when the world gets too loud.`,
+french: `Tu es le refuge où mon esprit se rend quand le monde devient trop bruyant.`
+},
+      {
+day: 140,
+english: `I always thought I understood what true beauty was... but then I saw you.`,
+french: `Je pensais savoir ce qu’était la vraie beauté… et puis je t’aie vue.`
+},
+      {
+day: 141,
+english: `You are my Paradise. I never want to be anywhere else.`,
+french: `Tu es mon paradis. Je ne veux être nulle part ailleurs.`
+},
+      {
+day: 142,
+english: `You are the best plot twist I could have ever asked for.`,
+french: `Tu es le meilleur rebondissement que j’aurais jamais pu espérer.`
+},
+      {
+day: 143,
+english: `In the healthiest possible way, I'm addicted to you.`,
+french: `De la manière la plus saine qui soit, je suis accro à toi.`
+},
+      {
+day: 144,
+english: `You can turn my worst day into my favorite memory.`,
+french: `Tu es capable de transformer ma pire journée en mon plus beau souvenir.`
+},
+      {
+day: 145,
+english: `When I tell you I adore you, I really mean that I adore you. Every single part of you. From your deepest darkest secrets right through to your dimples when you smile.`,
+french: `Quand je te dis que je t’adore, je veux dire que je t’adore vraiment. Chaque partie de toi, de tes secrets les plus sombres, en passant par la raie dans tes cheveux, le "one" sourcil froncé, le battement rapide de tes cils, tes Cleopatra eyes, tes grains de beauté, la courbe de tes lèvres, jusqu’à tes fossettes quand tu souris. `
+},
+      {
+day: 146,
+english: `For the first time in my life, I feel safe to be my real, true, authentic self.
+Your love is the safe space my heart has been craving since I entered this world.
+For the first time in what feels like forever, I feel like me.`,
+french: `Pour la première fois de ma vie, je me sens en sécurité d’être moi, réellement, pleinement, authentiquement.
+Ton amour est l’espace sûr que mon cœur recherchait désespérément depuis mon entrée dans ce monde.
+Pour la première fois depuis ce qui semble être une éternité, je me sens enfin moi.`
+},
+      {
+day: 147,
+english: `This is the type of love that makes me want to chase my dreams, smash my goals, and grow my mind.
+You make me want to be a better person every single day, and that's one of the millions of reasons I know that I want to spend the rest of my life loving you.`,
+french: `C’est le genre d’amour qui me donne envie de poursuivre mes rêves, d'atteindre mes objectifs et d’élever mon esprit.
+Tu me donnes envie d’être une meilleure personne chaque jour, et c’est l’une des millions de raisons pour lesquelles je sais que je veux passer le reste de ma vie à t’aimer.`
+},
+      {
+day: 148,
+english: `You have ignited something inside me that hasn't awakened before.
+I'm getting glimmers of the new person I always wanted to be but had no idea how to get there.`,
+french: `Tu as réveillé en moi quelque chose qui ne s’était jamais éveillé auparavant.
+J'aperçois des lueurs de la personne nouvelle que j’ai toujours voulu devenir, sans jamais savoir comment y arriver.`
+},
+      {
+day: 149,
+english: `You turn the most mundane aspects of life into... Magic.`,
+french: `Tu transformes les aspects les plus ordinaires de la vie en... Magie.`
+},
+      {
+day: 150,
+english: `I know I could never love you more than I do right now.\nBut tomorrow, I somehow will.`,
+french: `Je sais que je ne pourrais jamais t'aimer plus qu'en ce moment.\nMais demain, mystérieusement je le ferai en quelque sorte.`
+},
+      {
+day: 151,
+english: `Wherever I am in the world, as long as I'm with you, I know I'm right where I'm supposed to be.`,
+french: `Peu importe où je suis dans le monde, tant que je suis avec toi, je sais que je suis exactement là où je suis censé être.`
+},
+      {
+day: 152,
+english: `You have inspired a depth of love within me I never knew existed before I saw your face.`,
+french: `Tu as fait naître en moi une profondeur d’amour dont j’ignorais l’existence avant de voir ton visage.`
+},
+      {
+day: 153,
+english: `When I look into your eyes, I discover a world I never knew existed.
+The world where I feel safe, cherished, and loved to my core.
+Your ability to dissolve my worries is a gift I will forever treasure.`,
+french: `Quand je plonge mon regard dans tes yeux, je découvre un monde dont j’ignorais l’existence. Un monde où je me sens en sécurité, aimée, chérie jusqu’au plus profond de mon être. Ta capacité à apaiser mes inquiétudes est un cadeau que je chérirai pour toujours.`
+},
+      {
+day: 154,
+english: `We're gonna break generational curses.\nWe're gonna grow beyond our wildest dreams.\nWe're gonna expand our minds and open our hearts.\nWe're gonna absolutely flourish, and do you want to know what  the best part of it all is?\nWe're gonna do it all, together.`,
+french: `On va briser les malédictions générationnelles.\nOn va grandir au-delà de nos rêves.\nOn va élargir nos esprits et ouvrir grand nos cœurs.\nOn va s’épanouir pleinement.\nEt tu sais quoi ?\nLe plus beau dans tout ça, c’est qu’on va le faire ensemble.`
+},
+      {
+day: 155,
+english: `What made me fall in love with you?\nYour authenticity.\nYour imperfections.\nYour laugh.\nYour smile.\nYour eyes.\nYour heart.\nYou're honesty.\nKindness.\nSelf awareness.\nGrowth.\nEmotional maturity.\nYour dreams.\nYour goals.\nYour soul.`,
+french: `Qu’est-ce qui m’a fait tomber amoureux de toi ?\nTon authenticité.\nTes imperfections.\nTon rire.\nTon sourire.\nTes yeux.\nTon cœur.\nTa sincérité.\nTa gentillesse.\nTa conscience de toi.\nTa capacité à évoluer.\nTa maturité émotionnelle.\nTes rêves.\nTes objectifs.\nTon âme.`
+},
+      {
+day: 156,
+english: `I promise that I will always be there to wipe your tears.
+To give you advice when you want it, and to hug you when you need safety.
+To buy your snacks when you are hungry, and to stroke your hair until you fall asleep.
+I am your person, and I want to make sure your time on this planet is as perfect as it can be.`,
+french: `Je te promets d’être toujours là pour essuyer tes larmes.
+Pour te donner des conseils quand tu en as besoin, et te serrer dans mes bras quand tu cherches un refuge.
+Pour t’acheter tes snacks préférés quand tu as faim, et caresser tes cheveux jusqu’à ce que tu t’endormes.
+Je suis ta personne, et je veux faire en sorte que ton passage sur cette terre soit aussi doux que possible.`
+},
+      {
+day: 157,
+english: `The love I have for you feels like breathing. It is so natural, I can't believe there was ever a minute you were not in my life.`,
+french: `L’amour que j’ai pour toi est comme une respiration. C’est si naturel que j’ai du mal à croire qu’il ait jamais existé un seul instant où tu n’étais pas dans ma vie.`
+},
+      {
+day: 158,
+english: `Nothing, absolutely nothing could have prepared me for the amount of love I was about to experience, for the emotions I was about to feel, and for the smile that I would be wearing 24/7. I have never met anyone quite like you. What an honor it is to hold your hand in mine.`,
+french: `Rien, absolument rien n'aurait pu me préparer à la quantité d'amour que j'allais ressentir, aux émotions que j'allais éprouver, et à ce sourire que je porte sans cesse, jour et nuit, 24/7. Je n'ai jamais rencontré quelqu'un comme toi. Quel honneur c'est de tenir ta main dans la mienne.`
+},
+      {
+day: 159,
+english: `I will always make you feel like the only person in the world. I will always be your number one fan. I will always be there to pick up the pieces when you feel broken. I Will always love you, and it will always be an unconditional type of love.`,
+french: `Je te ferai toujours sentir comme la seule personne au monde. Je serai toujours ton plus grand admirateur. Je serai toujours là pour ramasser les morceaux quand tu te sentiras brisée. Je t'aimerai toujours, et ce sera toujours un amour inconditionnel.`
+},
+      {
+day: 160,
+english: `Every time I laugh, I'm thinking of you. Every time I see something beautiful, I'm thinking of you.
+Every time I stare out the window and imagine what my life will be like in the years to come, I am thinking of you.
+Not a moment goes by when you are not on my mind, and I wouldn't have it any other way.`,
+french: `À chaque fois que je ris, je pense à toi.
+À chaque fois que je vois quelque chose de beau, je pense à toi.
+À chaque fois que je regarde par la fenêtre et que j'imagine ce que sera ma vie dans les années à venir, je pense à toi.
+Pas un seul instant ne passe sans que tu sois dans mes pensées, et je ne voudrais pas qu'il en soit autrement.`
+},
+      {
+day: 161,
+english: `Honestly?\nYou stole my heart the very moment I laid my eyes on you.`,
+french: `Honnêtement ?\nTu as volé mon cœur dès l'instant où mon regard s'est posé sur toi.`
+},
+      {
+day: 162,
+english: `I can't believe I found my soulmate. Sometimes, when I see your face, it feels like I am dreaming. But the happiness I feel when I realize it's real is beyond words.`,
+french: `Je n’arrive pas à croire que j’ai trouvé mon âme sœur. Parfois, quand je vois ton visage, j’ai l’impression de rêver. Mais le bonheur que je ressens en réalisant que tout ça est réel… c’est au-delà des mots.`
+},
+      {
+day: 163,
+english: `I'm not just attracted to the way you look, but I'm attracted to your mind.\nYour personality.\nYour heart.\nYour soul.\nThe way you interact with people.\nYour open-mindedness.\nThe depth of your character.\nYou are absolutely extraordinary.`,
+french: `Je ne suis pas seulement attiré par ton apparence, mais je suis attiré par ton esprit.\nTa personnalité.\nTon cœur.\nTon âme.\nLa façon dont tu interagis avec les gens.\nTon ouverture d'esprit.\nLa profondeur de ton caractère.\nTu es absolument extraordinaire.`
+},
+      {
+day: 164,
+english: `Together, we have a lifetime of sunrises and sunsets ahead of us, and we are only just getting started.`,
+french: `Ensemble, nous avons toute une vie de levers et de couchers de soleil devant nous, et ce n’est que le début.`
+},
+      {
+day: 165,
+english: `I love how we communicate.\nYou respect me, and I respect you.\nWe listen to eachother, and we really listen.\nNothing feels like an issue with you.`,
+french: `J’aime la façon dont on communique.
+On se respecte.
+On s’écoute, vraiment, et avec attention.
+Avec toi, rien ne semble être un problème.`
+},
+      {
+day: 166,
+english: `You are enough.\nYou are worthy of the perfect life.\nYou are deserving of all the love the world has to offer.`,
+french: `Tu es suffisante, tu es assez.\nTu es digne de la vie parfaite.\nTu mérites tout l'amour que le monde a à offrir.`
+},
+      {
+day: 167,
+english: `Forever just isn't long enough to be with you.`,
+french: `Pour toujours n'est tout simplement pas assez long pour être avec toi.`
+},
+      {
+day: 168,
+english: `I can't help but keep falling in love with you over and over and over again.`,
+french: `Je ne peux m'empêcher de tomber amoureux de toi encore et encore et encore et encore... sans fin!`
+},
+      {
+day: 169,
+english: `From the moment you walked into my life, my heart found its forever home in yours.`,
+french: `Dès le moment où tu es entrée dans ma vie, mon cœur a trouvé son foyer éternel dans le tien.`
+},
+      {
+day: 170,
+english: `It wouldn't matter how long or how far I could search.\nI would never find anyone as perfect as you.`,
+french: `Peu importe combien de temps ou de distance je pourrais parcourir.\nJe ne trouverais jamais quelqu'un d'aussi parfait que toi.`
+},
+      {
+day: 171,
+english: `Your love made me feel welcomed, heard, seen, acknowledged, and supported, and that is one of the best gifts you could have ever given.`,
+french: `Ton amour m'a fait me sentir accueillie, écoutée, vue, reconnue et soutenue, et c'est l'un des plus beaux cadeaux que tu aurais pu m'offrir.`
+},
+      {
+day: 172,
+english: `When we are apart, it's not just you that I miss; it's your presence, your soul, and your essence that I long for.`,
+french: `Quand on est loin l’un de l’autre, ce n’est pas seulement toi qui me manques; c’est ta présence, ton âme, ton essence qui me manquent profondément.`
+},
+      {
+day: 173,
+english: `I want you to remember this:\nI'm not giving up on you «Tinhinane».\nI will never give up on us «Ninhinane».\nWhat we have a special, next level, real, and pure connection.\nNot in my wildest dreams would I ever just throw that way.\nYou're my entire world and more.\nI love Tinhinane and Ninhinane.`,
+french: `Je veux que tu te souviennes de ceci :\nJe t’abandonnerai jamais «Tinhinane».\nJe n’abandonnerai jamais «Ninhinane».\nCe qu’on partage est spécial, authentique, puissant, et pur.\nMême dans mes rêves les plus fous, je ne pourrais jamais tout laisser tomber.\nTu es mon monde entier, et bien plus encore.\nJ’aime Tinhinane et Ninhinane.`
+},
+      {
+day: 174,
+english: `This is a short message to the person who stole my heart.\nI will never stop loving you.\nThat’s all.`,
+french: `Ceci est un petit message pour la personne qui a conquis mon cœur.\nJe ne cesserai jamais de t’aimer.\nC’est tout.`
+},
+      {
+day: 175,
+english: `One of my favorite things about love is the casual intimacy.
+It's the way we hold each other's hands while having dinner, the sneaky grins we exchange when we are the only ones who have noticed something funny, the tender kisses planted on your forehead before falling asleep, and the reassuring hand on the thigh while driving.
+These are the small moments that speak volumes.`,
+french: `L’un de mes aspects préférés de l’amour, c’est l’intimité discrète.
+C’est la façon dont on se tient la main pendant le dîner, ces petits sourires complices qu’on échange quand on est les seuls à avoir remarqué quelque chose de drôle, les baisers tendres déposés sur ton front avant de s’endormir, et cette main rassurante sur la cuisse pendant que je conduis.
+Ce sont ces petits instants qui en disent long.`
+},
+      {
+day: 176,
+english: `The best day of my life was the day our hearts crossed paths.`,
+french: `Le plus beau jour de ma vie, c’est le jour où nos cœurs se sont croisés.`
+},
+      {
+day: 177,
+english: `Being with you is like being in a dream i never want to wake up from.
+And the best part of that is that it's actually not a dream, our love is real, and it's forever.`,
+french: `Être avec toi, c'est comme être dans un rêve dont je ne veux jamais me réveiller.
+Et le plus beau, c'est que ce n'est pas un rêve, notre amour est réel et il est éternel.`
+},
+      {
+day: 178,
+english: `Somehow, I still feel the same way I did when I first laid my eyes on you.\nCompletely overwhelmed with love.`,
+french: `D’une manière ou d’une autre, je ressens encore la même chose que le jour où je t’ai vu pour la première fois.
+Complètement submergé par l’amour.`
+},
+      {
+day: 179,
+english: `You are the kindest, most compassionate, incredible person i have ever met.\nYour strength amazes me every single day, and i am in awe of how you hold yourself during difficult times.\nYou deserve eternal happiness.\nYou deserve your dreams to come true.\nYou deserve the world.`,
+french: `Tu es la personne la plus gentille, la plus bienveillante et la plus formidable que j’aie jamais rencontrée. Ta force m’émerveille chaque jour, et je suis en admiration devant la façon dont tu te tiens dans les moments difficiles. Tu mérites un bonheur éternel.
+Tu mérites que tes rêves deviennent réalité.
+Tu mérites le monde.`
+},
+      {
+day: 180,
+english: `You silence the noise in my head and give me peace.\nYou make every day an adventure.\nYou overwhelm me with the type of love I never knew existed.\nYou are my other half.\nYou are my happy place.`,
+french: `Tu fais taire le bruit dans ma tête et tu m’apportes la paix.\nTu transformes chaque jour en aventure.\nTu m’envahis d’un amour dont je ne soupçonnais même pas l’existence.\nTu es mon autre moitié.\nTu es mon endroit préféré.\n`
+
+      }
+    ];
+
+    let currentIndex = 0;
+    const contentDiv = document.getElementById('content');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const randomBtn = document.getElementById('randomBtn');
+
+    function render() {
+      const phrase = phrases[currentIndex];
+      contentDiv.innerHTML = `
+        <div class="bubble-box">
+          <div class="bubble-title" onclick="toggleContent(this.nextElementSibling)">Jour #${phrase.day}</div>
+          <div class="bubble-content expanded">${phrase.french.replace(/\n/g, "<br>")}</div>
+        </div>
+        <div class="bubble-box">
+          <div class="bubble-title" onclick="toggleContent(this.nextElementSibling)">Day #${phrase.day}</div>
+          <div class="bubble-content">${phrase.english.replace(/\n/g, "<br>")}</div>
+        </div>
+      `;
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === phrases.length - 1;
+    }
+
+    function toggleContent(el) {
+      el.classList.toggle("expanded");
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        render();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < phrases.length - 1) {
+        currentIndex++;
+        render();
+      }
+    });
+
+    randomBtn.addEventListener('click', () => {
+      let randIndex;
+      do {
+        randIndex = Math.floor(Math.random() * phrases.length);
+      } while (randIndex === currentIndex);
+      currentIndex = randIndex;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
